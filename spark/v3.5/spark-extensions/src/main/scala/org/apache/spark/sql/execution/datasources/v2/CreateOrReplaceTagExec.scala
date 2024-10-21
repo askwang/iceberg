@@ -53,6 +53,10 @@ case class CreateOrReplaceTagExec(
         val manageSnapshot = iceberg.table.manageSnapshots()
         val refExists = null != iceberg.table().refs().get(tag)
 
+        // 可能的几种语法：
+        // (CREATE OR)? REPLACE TAG identifier (AS OF VERSION snapshotId)? (refRetain)?
+        // CREATE TAG (IF NOT EXISTS)? identifier (AS OF VERSION snapshotId)? (refRetain)?
+        // 先考虑 replace 的情况，剩余的就是 create 的情况
         if (create && replace && !refExists) {
           manageSnapshot.createTag(tag, snapshotId)
         } else if (replace) {
